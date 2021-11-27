@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/TOS-TG/engine#readme",
   "devDependencies": {
+    "@ts-docs/default-docs-structure": "^0.2.2",
+    "@ts-docs/ts-docs": "^0.2.2",
     "@types/node": "^16.11.10",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",

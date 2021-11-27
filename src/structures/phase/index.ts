@@ -16,22 +16,26 @@ export class Phase {
     game: Game;
     name: string;
     next: string;
-    duration: number;
     iterations: number;
+    originalDuration: number;
+    leftoverDuration?: number;
     private eventsEnd: Map<number, Array<PhaseEvent>>;
     private eventsStart: Map<number, Array<PhaseEvent>>;
     constructor(game: Game, data: PhaseData) {
         this.game = game;
         this.name = data.name;
         this.next = data.next;
-        this.duration = data.duration;
-        this.iterations = data.iterations || 0;
+        this.originalDuration = data.duration;
+        this.iterations = data.iterations || 1;
         this.eventsEnd = new Map();
         this.eventsStart = new Map();
     }
 
+    get duration() : number {
+        return this.leftoverDuration || this.originalDuration;
+    }
+
     start() {
-        this.game.clock.current = this;
         this.game.emit("phaseStart", this);
         const events = this.eventsStart.get(this.iterations);
         if (events) {
@@ -40,21 +44,19 @@ export class Phase {
         }
     }
 
-    end(startNext = true) {
+    end() : void {
         this.game.emit("phaseEnd", this);
         this.iterations++;
+        delete this.leftoverDuration;
         const events = this.eventsEnd.get(this.iterations);
         if (events) {
             for (const event of events) event(this.game, this);
             this.eventsEnd.delete(this.iterations);
         }
-        if (startNext) {
-            const nextPhase = this.game.clock.phases.get(this.next) as Phase;
-            nextPhase.start();
-        }
+        return;
     }
 
-    addEvent(iteration: number, atStart: boolean, fn: PhaseEvent) {
+    addEvent(iteration: number, atStart: boolean, fn: PhaseEvent) : void {
         const map = atStart ? this.eventsStart : this.eventsEnd;
         const events = map.get(iteration);
         if (!events) map.set(iteration, [fn]);

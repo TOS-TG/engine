@@ -1,2 +1,3 @@
 
-console.log("Hello World.");
+export * from "./structures";
+export * from "./game";

@@ -17,6 +17,30 @@ export class Clock {
         this.first = this.phases.get(data.firstPhase) as Phase;
     }
 
+    move(phase?: Phase) : void {
+        this.phaseStartedAt = Date.now();
+        clearTimeout(this.timer);
+        const nextPhase = phase || this.phases.get(this.current.next);
+        if (!nextPhase) throw new Error(`Phase '${nextPhase}' doesn't exist.`);
+        this.current = nextPhase;
+        nextPhase.start();
+
+        this.timer = setTimeout(() => {
+            this.current.end();
+            this.move();
+        }, nextPhase.duration);
+    }
+
+    jump(phaseName: string, forceEnd = true, leftovers?: number) : void {
+        const phase = this.phases.get(phaseName);
+        if (!phase) return;
+        clearTimeout(this.timer);
+        if (leftovers) phase.leftoverDuration = leftovers;
+
+        if (forceEnd) this.current.end();
+        this.move(phase);
+    }
+
     timeLeft() : {seconds: number, minutes: number} {
         const now = Date.now();
         const msLeft = this.current.duration - (now - this.phaseStartedAt);
