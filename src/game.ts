@@ -11,6 +11,7 @@ export class Game extends EventEmitter {
     roles: Collection<Role>;
     factions: Collection<Faction>;
     clock: Clock;
+    started: boolean;
 
     constructor(data: {
         phases: Array<PhaseData>,
@@ -21,6 +22,7 @@ export class Game extends EventEmitter {
         this.roles = new Collection();
         this.factions = new Collection();
         this.clock = new Clock(this, data);
+        this.started = false;
     }
 
 

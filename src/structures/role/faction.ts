@@ -1,15 +1,25 @@
 import { Game } from "../../game";
 import { Player } from "../player";
 
+export const enum WinConditionTypes {
+    EXCLUSIVE,
+    INCLUSIVE
+}
+
 /**
- * If the win condition returns an array of [[Player]], then those are the winners and the game ends.
- * If the function returns `undefined` or `false` then the role doesn't win.
+ * The win condition can either be [[WinConditionTypes.EXCLUSIVE as exclusive]] or [[WinConditionTypes.INCLUSIVE as inclusive]].
  * 
- * Every faction's and role's win condition gets executed:
- * - Every time someone gets lynched
- * - At the start of each day
+ * - If the win condition is **exclusive**, then **no other roles / factions with an exclusive win condition can win**. Exclusive win conditions aren't even called if there is more than 1 win condition
+ * in the game which is exclusive.
+ * - Inclusive win conditions are checked only when there is 1 exclusive win condition and that win condition returns a list of players and not false or undefined. Every inclusive win condition must
+ * return a list of players which win with the rest of the players. 
+ * 
+ * Every faction's and role's win condition gets executed at the end of every phase.
 */
-export type WinCondition = (game: Game) => Array<Player>|undefined|false;
+export interface WinCondition {
+    type: WinConditionTypes,
+    condition: (game: Game) => Array<Player>|undefined|false;
+}
 
 export interface FactionData {
     name: string,

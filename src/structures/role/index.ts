@@ -2,16 +2,12 @@ import { Game } from "../../game";
 import { Player } from "../player";
 import { Faction, WinCondition } from "./faction";
 
-export const enum PossibleRoleTargets {
-    SelfOnly,
-    Anyone
-}
-
 export type ActionTypes = "day" | "night" | "factional";
 
 export interface RoleAction {
     condition?: (game: Game, player: Player) => boolean,
-    action: (game: Game, player: Player, targets: Array<Player>) => void;
+    targets?: (game: Game, player: Player) => Array<Player>,
+    action: (game: Game, player: Player, targets: Array<Player>) => void
 }
 
 export type RoleHook = (game: Game, player: Player, ...other: Array<unknown>) => boolean;
@@ -25,8 +21,7 @@ export type RoleHookTypes = "target" // When the player who has this role gets t
 | "lynch" // When the player who has this role gets lynches
 | "start" // When the game starts
 | "attacked" // When the player who has this role gets attacked
-| "message" // When this player receives a message
-| "roleblocked" // When this player gets roleblocked
+| "message" // When this player receives a message from another player
 
 export interface RoleDescription {
     abilities: string,
@@ -38,9 +33,16 @@ export interface RoleAttributes {
     defense: number,
     astralVisits?: boolean,
     priority: number,
+    /**
+     * For investigator categories
+     */
     category: number,
     actionAmount?: number,
-    possibleTargets: PossibleRoleTargets
+    targets: {
+        amountDay?: number,
+        amountNight?: number,
+        amountFactional?: number
+    }
 }
 
 export interface RoleData {
@@ -67,6 +69,7 @@ export class Role {
     attributes: RoleAttributes;
     hooks: Record<RoleHookTypes, RoleHook>;
     actions: Record<ActionTypes, RoleAction>;
+    winCondition?: WinCondition;
     constructor(game: Game, data: RoleData) {
         this.name = data.name;
         this.alignment = data.alignment;
@@ -77,5 +80,6 @@ export class Role {
         this.hooks = data.hooks;
         this.actions = data.actions;
         this.game = game;
+        this.winCondition = data.winCondition;
     }
 }

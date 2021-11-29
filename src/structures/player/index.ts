@@ -21,13 +21,47 @@ export const enum PlayerJudgement {
     Abstain
 }
 
+export const enum PlayerInfoTypes {
+    /**
+     * Result messages, sheriff results, invest results, roleblocked, witched messages etc.
+     */
+    Result,
+    /**
+     * Messges which inform the death of the player.
+     */
+    Death,
+    /**
+     * Messages which are good for the player, heal, save, etc.
+     */
+    Good
+}
+
+/**
+ * These messages are sent from other roles to a player, and only the player can see them. 
+ */
+export interface PlayerMessage {
+    type: PlayerInfoTypes,
+    content: string
+}
+
+
 export class Player {
     game: Game;
     name: string;
     num: number;
     role: Role;
     state: PlayerState;
+    /**
+     * If the array of targets is empty, then that means the player stayed home (aka they didn't select anyone to target), if the array is empty then the night/factional action won't get executed,
+     * if it's set to undefined, then the action has been removed from another role (for example escort).
+     * 
+     * This property is used for **night** and **factional** actions only, because day actions get immediately executed, the day action's targets don't need to be shown.
+     */
     targets?: Array<Player>;
+    /**
+     * Night result messages. All of them get sent at once at the end of every night, and then the array gets emptied.
+    */
+    messages: Array<PlayerMessage>;
     votes: number;
     votedFor?: Player;
     judgement?: PlayerJudgement;
@@ -43,6 +77,8 @@ export class Player {
         this.state = PlayerState.Alive;
         this.votes = 0;
         this.nightly = {};
+        this.targets = [];
+        this.messages = [];
     }
 
     
