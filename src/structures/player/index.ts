@@ -44,7 +44,6 @@ export interface PlayerMessage {
     content: string
 }
 
-
 export class Player {
     game: Game;
     name: string;
@@ -52,7 +51,7 @@ export class Player {
     role: Role;
     state: PlayerState;
     /**
-     * If the array of targets is empty, then that means the player stayed home (aka they didn't select anyone to target), if the array is empty then the night/factional action won't get executed,
+     * If the array of targets is empty, then that means the player stayed home (aka they didn't select anyone to target), if the array is empty then the action `targets: 0` will be executed only,
      * if it's set to undefined, then the action has been removed from another role (for example escort).
      * 
      * This property is used for **night** and **factional** actions only, because day actions get immediately executed, the day action's targets don't need to be shown.

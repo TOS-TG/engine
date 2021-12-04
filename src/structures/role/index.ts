@@ -6,7 +6,8 @@ export type ActionTypes = "day" | "night" | "factional";
 
 export interface RoleAction {
     condition?: (game: Game, player: Player) => boolean,
-    targets?: (game: Game, player: Player) => Array<Player>,
+    possibleTargets?: (game: Game, player: Player) => Array<Player>,
+    targets: number,
     action: (game: Game, player: Player, targets: Array<Player>) => void
 }
 

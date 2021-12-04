@@ -36,7 +36,6 @@ export class Clock {
         if (!phase) return;
         clearTimeout(this.timer);
         if (leftovers) phase.leftoverDuration = leftovers;
-
         if (forceEnd) this.current.end();
         this.move(phase);
     }
